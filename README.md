@@ -50,3 +50,7 @@ $ plink --bfile wgas1 --missing --out miss_stat
 #check for id missing
 #missing individuals (N MISS) and the proportion of individuals missing (F MISS)
 head miss_stat.imiss
+
+#MAF test
+plink --bfile wgas1 --freq --out freq_stat
+head freq_stat.frq

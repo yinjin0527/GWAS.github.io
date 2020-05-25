@@ -1,12 +1,12 @@
 # GWAS step by step
 
-## install PLINK using conda 
+## Install PLINK using conda 
 ```
 conda install -c bioconda plink
 conda install -c bioconda/label/cf201901 plink
 ```
 
-## using a example dataset
+## Using a example dataset from plink example
 ```
 mkdir -p ~/GWAS
 cd GWAS
@@ -15,7 +15,7 @@ unzip example.zip
 cd example/
 
 ```
-## check Ped file maping information and change to binary (fam bed bai) files
+## Check Ped file maping information and change to binary (fam bed bai) files
 ```
 $ plink --file wgas1
 $ plink --file wgas1 --make-bed --out wgas1

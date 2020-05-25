@@ -24,11 +24,6 @@ $ plink --file wgas1 --make-bed --out wgas1
 ![filemap](https://www.researchgate.net/publication/281588338/figure/fig6/AS:281417826226190@1444106646899/Genome-wide-association-data-files-GWA-data-files-are-typically-organized-into_W640.jpg) 
 
 
-
-
-
-
-
 ## PLink quanlity control,command and function.
 | Step                                   | Command                                                      | Function                                                     |
 | -------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -42,3 +37,16 @@ $ plink --file wgas1 --make-bed --out wgas1
 | ‐‐min                                  | Sets threshold and creates a list of individuals with relatedness above the chosen threshold. Meaning that subjects who are related at, for example, pi‐hat >0.2 (i.e., second degree relatives) can be detected. |                                                              |
 | 7: Population stratification           | ‐‐genome                                                     | Calculates identity by descent (IBD) of all sample pairs.    |
 | ‐‐cluster ‐‐mds‐plot *k*               | Produces a *k*‐dimensional representation of any substructure in the data, based on IBS. |                                                              |
+
+
+## quality control
+Missingness per individual --mind 0.1 >10% 
+Missingness per marker --geno 0.1 > 10% 
+Allele frequency --maf 0.05 MAF <= 0.05 
+Hardy-Weinberg equilibrium --hwe 0.001 case and control separately
+```
+#create two types of missing files id missing .imiss file, snp .lmiss file
+$ plink --bfile wgas1 --missing --out miss_stat
+#check for id missing
+#missing individuals (N MISS) and the proportion of individuals missing (F MISS)
+head miss_stat.imiss

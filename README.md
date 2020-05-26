@@ -40,6 +40,7 @@ $ plink --file wgas1 --make-bed --out wgas1
 
 
 ## Quality control
+professor Paschou's pipeline:
 Remove Id with following properties:
 call rate <0.98
 absval inbreeding coefficient >0.2
@@ -108,14 +109,16 @@ head pihat.genome
 
 ### perform quality control
 ```
-#Delete SNPs and individuals with high levels of missingness
+#1)Delete SNPs and individuals with high levels of missingness
 
 plink --bfile wgas1 --geno 0.02 --make-bed --out wgas2
 plink --bfile wgas2 --mind 0.02 --make-bed --out wgas3
+```
+23441 variants removed due to missing genotype data (--geno).
+205253 variants and 90 people pass filters and QC.
 
-
-
-# Check for sex discrepancy
+```
+# 2) Check for sex discrepancy
 # 1) Delete individuals with sex discrepancy.
 grep "PROBLEM" plink.sexcheck| awk '{print$1,$2}'> sex_discrepancy.txt
 plink --bfile wgas3 --remove sex_discrepancy.txt --make-bed --out wgas4 
@@ -123,8 +126,8 @@ plink --bfile wgas3 --remove sex_discrepancy.txt --make-bed --out wgas4
 
 # 2) impute-sex.
 #plink --bfile wgas4 --impute-sex --make-bed --out wgas5
-
-
+```
+```
 3) MAF
 
 # Generate a bfile with autosomal SNPs only and delete SNPs with a low minor allele frequency (MAF).
@@ -135,17 +138,17 @@ plink --bfile wgas5 --extract snp_1_22.txt --make-bed --out wgas6
 
 # Remove SNPs with a low MAF frequency.
 plink --bfile wgas6 --maf 0.05 --make-bed --out wgas7
-
-
+```
+```
 4) HWE
 # Therefore, we use two steps, first we use a stringent HWE threshold for controls, followed by a less stringent threshold for the case data.
 plink --bfile wgas7 --hwe 1e-6 --make-bed --out wgas8
 
 # This second HWE step only focusses on cases because in the controls all SNPs with a HWE p-value < hwe 1e-6 were already removed
 plink --bfile wgas8 --hwe 1e-10 --hwe-all --make-bed --out wgas9
+```
 
-
-
+```
 5) heterozygosity rate 
 # remove individuals with a heterozygosity rate deviating more than 3 sd from the mean.
 # Checks for heterozygosity are performed on a set of SNPs which are not highly correlated.
@@ -162,7 +165,8 @@ sed 's/"// g' fail-het-qc.txt | awk '{print$1, $2}'> het_fail_ind.txt
 
 # Remove heterozygosity rate outliers.
 plink --bfile wgas9 --remove het_fail_ind.txt --make-bed --out wgas10
-
+```
+```
 6) heterozygosity rate 
 # Assuming a random population sample we are going to exclude all individuals above the pihat threshold of 0.2 in this tutorial.
 # Check for relationships between individuals with a pihat > 0.2.
@@ -172,9 +176,9 @@ plink --bfile wgas10 --extract indepSNP.prune.in --genome --min 0.2 --out pihat_
 # The HapMap dataset is known to contain parent-offspring relations. 
 # The following commands will visualize specifically these parent-offspring relations, using the z values. 
 awk '{ if ($8 >0.9) print $0 }' pihat_min0.2.genome>zoom_pihat.genome
+```
 
-
-
+```
 7) relatedness
 # The generated plots show a considerable amount of related individuals (explentation plot; PO = parent-offspring, UN = unrelated individuals) in the Hapmap data, this is expected since the dataset was constructed as such.
 # Normally, family based data should be analyzed using specific family based methods. relatedness here  as cryptic relatedness in a random population sample.
@@ -189,10 +193,12 @@ plink --bfile wgas11 --missing
 
 # Delete the individuals with the lowest call rate in 'related' pairs with a pihat > 0.2 
 plink --bfile wgas11 --remove 0.2_low_call_rate_pihat.txt --make-bed --out wgas12
-
+```
+```
 ###
 8)if trio then Mendel error rate need be considered
 plink --bfile wgas12 --me 1 1 --set-me-missing --make-bed --out wgas13
 ###
+```
 
 

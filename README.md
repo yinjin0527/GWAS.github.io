@@ -62,7 +62,7 @@ invariant
 |            | functioln              | explanation                                                  |
 | ---------- | ---------------------- | ------------------------------------------------------------ |
 | #  per SNP | geno=0.02              | include only SNPs with missing-rate < NUM                    |
-| #  per SNP | maf=0.00               | include only SNPs with MAF > NUM                             |
+| #  per SNP | maf=0.05               | include only SNPs with MAF > NUM                             |
 | #  per SNP | midi=0.02              | include only SNPs with case/control  missing-rate-difference < NUM |
 | #  per SNP | pre_geno=0.05          | include only SNPs with missing-rate < NUM  (before ID filter) |
 | #  per SNP | lmend=4                | number of mendelian errors per ID                            |

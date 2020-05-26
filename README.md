@@ -39,7 +39,7 @@ $ plink --file wgas1 --make-bed --out wgas1
 | ‐‐cluster ‐‐mds‐plot *k*               | Produces a *k*‐dimensional representation of any substructure in the data, based on IBS. |                                                              |
 
 
-## quality control
+## Quality control
 Remove Id with following properties:
 call rate <0.98
 absval inbreeding coefficient >0.2
@@ -75,23 +75,40 @@ invariant
 |            | sexmin = 10            | INT minimum number of chrX SNPs to perform  sexcheck, default: $sexcheck_min |
 
 
+###Before quality control
 ```
-#first step
+#1.check missing value
 #create two types of missing files id missing .imiss file, snp .lmiss file
 $ plink --bfile wgas1 --missing --out miss_stat
 #check for id missing
 
-#missing individuals (N MISS) and the proportion of individuals missing (F MISS)
+#2.check sample gender
+plink --bfile wgas1  --check-sex --out gender
+
+#3.missing individuals (N MISS) and the proportion of individuals missing (F MISS)
 head miss_stat.imiss
+head miss_stat.lmiss
 
-#Filtered out SNPs with genotyping efficiency below 95%
-plink --noweb --bfile wgas1 --geno 0.05 --make-bed --out geno_wgas1
-
-
-
-#MAF test
+#4.check MAF
 plink --bfile wgas1 --freq --out freq_stat
 head freq_stat.frq
 
-plink --bfile test --geno 005 --hwe 0.000001 --mad 0.5 --mind 0.1 --make-bed --out test_qc1
+#5.check HWE
+plink --bfile wgas1 --hardy out HWE
+head HWE.hwe
+
+#6.Heterozygosity
+plink --bfile wgas1  --het --out inbreed 
+head inbreed.het
+
+7.Relatedness
+plink --bfile wgas1 --extract  --genome  --out pihat
+head pihat.genome
+
+
+
+
+
+
+
 

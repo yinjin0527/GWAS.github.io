@@ -59,19 +59,21 @@ if control only, P<1e-6
 if both cases and control, P calculated from cases <1e-10 or from control <1e-6
 invariant
 
-| # per ID   | mind=0.02              | include only  IDs with missing-rate < NUM                    |
+|            | functioln              | explanation                                                  |
 | ---------- | ---------------------- | ------------------------------------------------------------ |
 | #  per SNP | geno=0.02              | include only SNPs with missing-rate < NUM                    |
 | #  per SNP | maf=0.00               | include only SNPs with MAF > NUM                             |
 | #  per SNP | midi=0.02              | include only SNPs with case/control  missing-rate-difference < NUM |
 | #  per SNP | pre_geno=0.05          | include only SNPs with missing-rate < NUM  (before ID filter) |
 | #  per SNP | lmend=4                | number of mendelian errors per ID                            |
+| #  per ID  | mind=0.02              | include only  IDs with missing-rate < NUM                    |
 | #  per ID  | imend =10000           | max number of mendelian errors per SNP                       |
 | #  per ID  | Fhet_th=.2             | NUM -NUM < FHET < NUM                                        |
 |            | hwe_th_co=0.000001     | NUM  HWE_controls < NUM                                      |
 |            | hwe_th_ca=0.0000000001 | NUM HWE_cases < NUM                                          |
 |            | withpna=0              | inlcude SNPs with p=NA (monomorph)                           |
 |            | sexmin = 10            | INT minimum number of chrX SNPs to perform  sexcheck, default: $sexcheck_min |
+
 
 ```
 #first step

@@ -75,7 +75,7 @@ invariant
 |            | sexmin = 10            | INT minimum number of chrX SNPs to perform  sexcheck, default: $sexcheck_min |
 
 
-###Before quality control
+### Before quality control
 ```
 #1.check missing value
 #create two types of missing files id missing .imiss file, snp .lmiss file
@@ -101,14 +101,93 @@ head HWE.hwe
 plink --bfile wgas1  --het --out inbreed 
 head inbreed.het
 
-7.Relatedness
+#7.Relatedness
 plink --bfile wgas1 --extract  --genome  --out pihat
 head pihat.genome
+```
+
+### perform quality control
+```
+#Delete SNPs and individuals with high levels of missingness
+
+plink --bfile wgas1 --geno 0.02 --make-bed --out wgas2
+plink --bfile wgas2 --mind 0.02 --make-bed --out wgas3
 
 
 
+# Check for sex discrepancy
+# 1) Delete individuals with sex discrepancy.
+grep "PROBLEM" plink.sexcheck| awk '{print$1,$2}'> sex_discrepancy.txt
+plink --bfile wgas3 --remove sex_discrepancy.txt --make-bed --out wgas4 
+
+
+# 2) impute-sex.
+#plink --bfile wgas4 --impute-sex --make-bed --out wgas5
+
+
+3) MAF
+
+# Generate a bfile with autosomal SNPs only and delete SNPs with a low minor allele frequency (MAF).
+
+# Select autosomal SNPs only.
+awk '{ if ($1 >= 1 && $1 <= 22) print $2 }' wgas5 > snp_1_22.txt
+plink --bfile wgas5 --extract snp_1_22.txt --make-bed --out wgas6
+
+# Remove SNPs with a low MAF frequency.
+plink --bfile wgas6 --maf 0.05 --make-bed --out wgas7
+
+
+4) HWE
+# Therefore, we use two steps, first we use a stringent HWE threshold for controls, followed by a less stringent threshold for the case data.
+plink --bfile wgas7 --hwe 1e-6 --make-bed --out wgas8
+
+# This second HWE step only focusses on cases because in the controls all SNPs with a HWE p-value < hwe 1e-6 were already removed
+plink --bfile wgas8 --hwe 1e-10 --hwe-all --make-bed --out wgas9
 
 
 
+5) heterozygosity rate 
+# remove individuals with a heterozygosity rate deviating more than 3 sd from the mean.
+# Checks for heterozygosity are performed on a set of SNPs which are not highly correlated.
+# Therefore, to generate a list of non-(highly)correlated SNPs, we exclude high inversion regions  and prune the SNPs using the command --indep-pairwise’.
+# The parameters ‘50 5 0.2’ stand respectively for: the window size, the number of SNPs to shift the window at each step, and the multiple correlation coefficient for a SNP being regressed on all other SNPs simultaneously.
+
+plink --file wgas9--make-set inversion-ld.txt --write-set --out inversion
+plink --bfile wgas9 --exclude inversion-ld.txt --range --indep-pairwise 50 5 0.2 --out indepSNP
+
+
+
+# Adapt this file to make it compatible for PLINK, by removing all quotation marks from the file and selecting only the first two columns.
+sed 's/"// g' fail-het-qc.txt | awk '{print$1, $2}'> het_fail_ind.txt
+
+# Remove heterozygosity rate outliers.
+plink --bfile wgas9 --remove het_fail_ind.txt --make-bed --out wgas10
+
+6) heterozygosity rate 
+# Assuming a random population sample we are going to exclude all individuals above the pihat threshold of 0.2 in this tutorial.
+# Check for relationships between individuals with a pihat > 0.2.
+
+plink --bfile wgas10 --extract indepSNP.prune.in --genome --min 0.2 --out pihat_min0.2
+
+# The HapMap dataset is known to contain parent-offspring relations. 
+# The following commands will visualize specifically these parent-offspring relations, using the z values. 
+awk '{ if ($8 >0.9) print $0 }' pihat_min0.2.genome>zoom_pihat.genome
+
+
+
+7) relatedness
+# The generated plots show a considerable amount of related individuals (explentation plot; PO = parent-offspring, UN = unrelated individuals) in the Hapmap data, this is expected since the dataset was constructed as such.
+# Normally, family based data should be analyzed using specific family based methods. relatedness here  as cryptic relatedness in a random population sample.
+
+plink --bfile wgas10 --filter-founders --make-bed --out wgas11
+
+#  individuals with a pihat >0.2.
+plink --bfile wgas11 --extract indepSNP.prune.in --genome --min 0.2 --out pihat_min0.2_in_founders
+
+# For each pair of 'related' individuals with a pihat > 0.2, we recommend to remove the individual with the lowest call rate. 
+plink --bfile wgas11 --missing
+
+# Delete the individuals with the lowest call rate in 'related' pairs with a pihat > 0.2 
+plink --bfile wgas11 --remove 0.2_low_call_rate_pihat.txt --make-bed --out wgas12
 
 

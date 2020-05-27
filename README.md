@@ -250,8 +250,7 @@ Total genotyping rate is 0.998381.
 # Therefore, to generate a list of non-(highly)correlated SNPs, we exclude high inversion regions  and prune the SNPs using the command --indep-pairwise’.
 # The parameters ‘50 5 0.2’ stand respectively for: the window size, the number of SNPs to shift the window at each step, and the multiple correlation coefficient for a SNP being regressed on all other SNPs simultaneously.
 
-plink --file wgas9--make-set inversion-ld.txt --write-set --out inversion
-plink --bfile wgas9 --exclude inversion-ld.txt --range --indep-pairwise 50 5 0.2 --out indepSNP
+plink --bfile wgas5 --range --indep-pairwise 50 5 0.2 --out indepSNP
 
 
 
@@ -262,7 +261,7 @@ sed 's/"// g' fail-het-qc.txt | awk '{print$1, $2}'> het_fail_ind.txt
 plink --bfile wgas9 --remove het_fail_ind.txt --make-bed --out wgas10
 ```
 ```
-6) heterozygosity rate 
+
 # Assuming a random population sample we are going to exclude all individuals above the pihat threshold of 0.2 in this tutorial.
 # Check for relationships between individuals with a pihat > 0.2.
 
@@ -270,7 +269,7 @@ plink --bfile wgas10 --extract indepSNP.prune.in --genome --min 0.2 --out pihat_
 
 # The HapMap dataset is known to contain parent-offspring relations. 
 # The following commands will visualize specifically these parent-offspring relations, using the z values. 
-awk '{ if ($8 >0.9) print $0 }' pihat_min0.2.genome>zoom_pihat.genome
+'{ if ($8 >0.9) print $0 }' pihat_min0.2.genome>zoom_pihat.genome
 ```
 
 ```
@@ -295,6 +294,6 @@ plink --bfile wgas11 --remove 0.2_low_call_rate_pihat.txt --make-bed --out wgas1
 plink --bfile wgas12 --me 1 1 --set-me-missing --make-bed --out wgas13
 ###
 ```
-This dataset is not trio
+
 
 

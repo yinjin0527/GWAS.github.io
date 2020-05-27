@@ -294,6 +294,66 @@ plink --bfile wgas11 --remove 0.2_low_call_rate_pihat.txt --make-bed --out wgas1
 plink --bfile wgas12 --me 1 1 --set-me-missing --make-bed --out wgas13
 ###
 ```
+##Population stratification
+```
+two method here: 
+the principal-component analysis (PCA) method 
+multidimensional-scaling (MDS) method 
+
+for PCA
+A first round PCA was conducted using all autosomal SNPs with minor allele frequency >0.01.
+To correct for the local effects, the PCA was re-applied in a reduced SNP set.
+i) SNPs with loadings that deviated from their expected normal quantiles with a distance greater than one were excluded along all leading components; ii) remaining SNPs were pruned using the "indep-pairwise" option in PLINK 1.03 [3] such that all SNPs within a given window size of 100 had pairwise r2 < 0.2; iii) each SNP was regressed on the previous two SNPs, and the residual entered into the PCA. 
+SNP loadings on all components deemed significant by the Tracy-Widom statistic [6] were re-inspected to make sure that no component was dominated by a small LD region of the genome. In case there were still leading components dominated by local LD regions, the second round of PCA was repeated with adjusted parameters until no component was dominated by a small LD region. Population outliers were excluded along all significant components.
+
+Run Plink PCA or PCA in R
+Decided how many PCA will be used based on plot (usually 3-4PCA)
+Adjust population on first N PCs 
+
+for MDS
+SNPs that passed quality control were pruned such that all SNPs within a given window size of 100 had pairwise r2 < 0.2. Pairwise IBS distance was calculated using all autosomal SNPs that remained after pruning. Five nearest neighbors were identified for each individual based upon the pairwise IBS distance. IBS distance to each of the five nearest neighbors was then transformed into a Z score. Individuals with a minimum Z score among the five nearest neighbors less than -4 were excluded from analysis as population outliers.
+
+1. Download 1000 Genomes data and Convert vcf to Plink format.
+2. QC on 1000 Genomes data.
+1) Remove individuals based on missing genotype data.
+2) Remove variants based on missing genotype data.
+3) Remove individuals based on missing genotype data.
+4) Remove variants based on MAF.
+3. Extract the variants present in origal dataset from the 1000 genomes dataset.
+4 Extract the variants present in 1000 Genomes dataset from the HapMap dataset.
+5. The datasets must have the same build. Change the build 1000 Genomes data build.
+6.Merge the HapMap and 1000 Genomes data sets
+
+7. Prior to merging 1000 Genomes data with the origal data we want to make sure that the files are mergeable, for this we conduct 3 steps:
+# 1) Make sure the reference genome is similar in the HapMap and the 1000 Genomes Project datasets.
+# 2) Resolve strand issues.
+# 3) Remove the SNPs which after the previous two steps still differ between datasets.
+
+
+1 set reference genome 
+2 Resolve strand issues.
+3 Flip SNPs for resolving strand issues.
+4 Check for SNPs which are still problematic after they have been flipped.
+5 Remove problematic SNPs from HapMap and 1000 Genomes.
+6 Merge HapMap with 1000 Genomes Data.
+
+
+## Perform MDS on HapMap-CEU data anchored by 1000 Genomes data.
+# Using a set of pruned SNPs
+plink --bfile MDS_merge2 --extract indepSNP.prune.in --genome --out MDS_merge2
+plink --bfile MDS_merge2 --read-genome MDS_merge2.genome --cluster --mds-plot 10 --out MDS_merge2
+
+### MDS-plot
+# Download the file with population information of the 1000 genomes dataset.
+# Convert population codes into superpopulation codes
+#check for race ethnicity gender age and ect.
+# Create covariates based on MDS.
+# Perform an MDS with or without covariates
+
+
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-# GWAS step by step
+# GWAS pipeline to learn PLINK and its function
 
 ## Install PLINK using conda 
 ```

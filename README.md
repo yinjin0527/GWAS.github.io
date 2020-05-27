@@ -250,30 +250,30 @@ Total genotyping rate is 0.998381.
 # Therefore, to generate a list of non-(highly)correlated SNPs, we exclude high inversion regions  and prune the SNPs using the command --indep-pairwise’.
 # The parameters ‘50 5 0.2’ stand respectively for: the window size, the number of SNPs to shift the window at each step, and the multiple correlation coefficient for a SNP being regressed on all other SNPs simultaneously.
 
-plink --bfile wgas5 --range --indep-pairwise 50 5 0.2 --out indepSNP
+plink --bfile wgas9 --exclude inversion.txt --range --indep-pairwise 50 5 0.2 --out indepSNP
 
+het <- read.table("R_check.het", head=TRUE)
+pdf("heterozygosity.pdf")
+het$HET_RATE = (het$"N.NM." - het$"O.HOM.")/het$"N.NM."
+hist(het$HET_RATE, xlab="Heterozygosity Rate", ylab="Frequency", main= "Heterozygosity Rate")
+dev.off()
+
+het <- read.table("R_check.het", head=TRUE)
+het$HET_RATE = (het$"N.NM." - het$"O.HOM.")/het$"N.NM."
+het_fail = subset(het, (het$HET_RATE < mean(het$HET_RATE)-3*sd(het$HET_RATE)) | (het$HET_RATE > mean(het$HET_RATE)+3*sd(het$HET_RATE)));
+het_fail$HET_DST = (het_fail$HET_RATE-mean(het$HET_RATE))/sd(het$HET_RATE);
+write.table(het_fail, "fail-het-qc.txt", row.names=FALSE)
 
 
 # Adapt this file to make it compatible for PLINK, by removing all quotation marks from the file and selecting only the first two columns.
 sed 's/"// g' fail-het-qc.txt | awk '{print$1, $2}'> het_fail_ind.txt
 
 # Remove heterozygosity rate outliers.
-plink --bfile wgas9 --remove het_fail_ind.txt --make-bed --out wgas10
-```
-```
-
-# Assuming a random population sample we are going to exclude all individuals above the pihat threshold of 0.2 in this tutorial.
-# Check for relationships between individuals with a pihat > 0.2.
-
-plink --bfile wgas10 --extract indepSNP.prune.in --genome --min 0.2 --out pihat_min0.2
-
-# The HapMap dataset is known to contain parent-offspring relations. 
-# The following commands will visualize specifically these parent-offspring relations, using the z values. 
-'{ if ($8 >0.9) print $0 }' pihat_min0.2.genome>zoom_pihat.genome
+plink --bfile wgas9 --remove het_fail_ind.txt --make-bed --out wgas1
 ```
 
 ```
-7) relatedness
+6) relatedness
 # The generated plots show a considerable amount of related individuals (explentation plot; PO = parent-offspring, UN = unrelated individuals) in the Hapmap data, this is expected since the dataset was constructed as such.
 # Normally, family based data should be analyzed using specific family based methods. relatedness here  as cryptic relatedness in a random population sample.
 
@@ -290,7 +290,7 @@ plink --bfile wgas11 --remove 0.2_low_call_rate_pihat.txt --make-bed --out wgas1
 ```
 ```
 ###
-8)if trio then Mendel error rate need be considered
+7)if trio then Mendel error rate need be considered
 plink --bfile wgas12 --me 1 1 --set-me-missing --make-bed --out wgas13
 ###
 ```

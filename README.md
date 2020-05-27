@@ -294,7 +294,7 @@ plink --bfile wgas11 --remove 0.2_low_call_rate_pihat.txt --make-bed --out wgas1
 plink --bfile wgas12 --me 1 1 --set-me-missing --make-bed --out wgas13
 ###
 ```
-##Population stratification
+## Population stratification
 ```
 two method here: 
 the principal-component analysis (PCA) method 

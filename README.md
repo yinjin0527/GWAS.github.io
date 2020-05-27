@@ -269,7 +269,7 @@ write.table(het_fail, "fail-het-qc.txt", row.names=FALSE)
 sed 's/"// g' fail-het-qc.txt | awk '{print$1, $2}'> het_fail_ind.txt
 
 # Remove heterozygosity rate outliers.
-plink --bfile wgas9 --remove het_fail_ind.txt --make-bed --out wgas1
+plink --bfile wgas9 --remove het_fail_ind.txt --make-bed --out wgas10
 ```
 
 ```
